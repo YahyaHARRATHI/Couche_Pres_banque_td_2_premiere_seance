@@ -1,22 +1,24 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 
+import dal.beans.Client;
 import dal.beans.Compte;
 import dal.services.SpringFactoryClient;
 
 @Named
 @RequestScoped
-public class ClientBean {
+public class ClientBean implements Serializable {
 	private Long num;
 	private String nom;
 	private String prenom ;
 	private List<Compte> comptes;
 	//pas la peine car depuis d'un jar  //pas distribué
 	
-	SpringFactoryClient factclient;
+	SpringFactoryClient factclient; 
 	
 	
 	public List<Compte> getComptes() {
@@ -38,19 +40,27 @@ public class ClientBean {
 		this.prenom = prenom;
 	}
 	
-	public String listComptes(){
+	public String listeComptes(){
 		
 		factclient=new SpringFactoryClient();
-		
-		this.comptes=new ArrayList<Compte>(factclient.getClientService().findClient(num).getComptes());
-		
-		return "affichage.xhtml";
-		
-			
+		Client c=new Client();
+		c.setNom(nom);
+		c.setPrenom(prenom);
 		
 		
+		this.comptes=new ArrayList<Compte>(factclient.getClientService().findClient(c).getComptes());
 		
+		if(this.comptes.isEmpty())
+		return "authentification";
+		else return "affiche";
+	
 	}
+	
+	public String connect(){
+		
+		return "Comptes";
+	}
+	
 	public Long getNum() {
 		return num;
 	}
